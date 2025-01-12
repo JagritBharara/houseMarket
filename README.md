@@ -29,4 +29,4 @@ This is a property management API that allows users to register, log in, manage 
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/yourusername/property-management-api.git
+git clone [https://github.com/yourusername/property-management-api.git](https://github.com/JagritBharara/houseMarket.git)
