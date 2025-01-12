@@ -1,11 +1,14 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import Layout from '../components/Layout/Layout'
+import axios from 'axios'
+import PropertyList from '../components/PropertyList'
 
 const HomePage = () => {
   return (
     <>
         <Layout>
-            HomePage
+          HOME PAGE
+          <PropertyList/>
         </Layout>
     </>
   )

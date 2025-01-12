@@ -1,9 +1,13 @@
 import React from 'react'
 import Layout from '../components/Layout/Layout'
+import PropertyList from '../components/PropertyList'
 
 const Offers = () => {
   return (
-    <Layout>Offers</Layout>
+    <Layout>
+      OFFERS
+      <PropertyList/>
+    </Layout>
   )
 }
 

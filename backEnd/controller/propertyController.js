@@ -3,15 +3,14 @@ const fs = require('fs'); // For file handling
 
 // Add property with images
 module.exports.addProperty = async (req, res) => {
-    const { userId, amount, category, description, date,properyId } = req.body;
+    const { amount, category, description, date, propertyId } = req.body;
+    const userId = req.user.email; 
 
     try {
-        // Validate required fields
-        if (!userId || !amount || !category || !properyId) {
+        if (!userId || !amount || !category || !propertyId) {
             return res.status(400).json({ message: 'Required fields are missing.' });
         }
 
-        // Process uploaded images (if any)
         const images = req.files.map((file) => {
             const imageData = fs.readFileSync(file.path); // Read file as Buffer
             return {
@@ -21,10 +20,9 @@ module.exports.addProperty = async (req, res) => {
             };
         });
 
-        // Create a new property
         const newProperty = new propertyModel({
             userId,
-            properyId,
+            propertyId,
             amount,
             category,
             images,
@@ -32,30 +30,52 @@ module.exports.addProperty = async (req, res) => {
             date
         });
 
-        // Save the property to the database
         const savedProperty = await newProperty.save();
 
-        // Clean up temporary files
-        req.files.forEach((file) => fs.unlinkSync(file.path));
+        // Clean up files after saving
+        req.files.forEach((file) => {
+            try {
+                if (fs.existsSync(file.path)) {
+                    fs.unlinkSync(file.path);
+                }
+            } catch (err) {
+                console.error(`Error deleting file: ${file.path}`, err);
+            }
+        });
 
-        // Send a response back to the client
         res.status(201).json({
             message: 'Property added successfully.',
             property: savedProperty
         });
     } catch (err) {
         console.error(err);
-        res.status(500).json({ message: 'An error occurred while adding the property.', error: err.message });
+
+        // Clean up files in case of an error
+        req.files.forEach((file) => {
+            try {
+                if (fs.existsSync(file.path)) {
+                    fs.unlinkSync(file.path);
+                }
+            } catch (cleanupErr) {
+                console.error(`Error cleaning up file: ${file.path}`, cleanupErr);
+            }
+        });
+
+        res.status(500).json({
+            message: 'An error occurred while adding the property.',
+            error: err.message
+        });
     }
 };
 
 // Delete property
 module.exports.getdeleteProperty = async (req, res) => {
-    const { userId, propertyId } = req.body;
+    const { propertyId } = req.body;
+    const userId = req.user.email;
 
     try {
-        console.log(userId);
-            console.log(propertyId);
+        // console.log(userId);
+            // console.log(propertyId);
         // Validate inputs
         if (!userId || !propertyId) {
             console.log(userId);
@@ -88,13 +108,47 @@ module.exports.getdeleteProperty = async (req, res) => {
 // Show all properties
 module.exports.getAllProperties = async (req, res) => {
     try {
-        const properties = await propertyModel.find(); // Fetch all properties
+        const properties = await propertyModel.find();
+
+        // Convert image buffers to Base64 strings
+        const formattedProperties = properties.map((property) => ({
+            ...property.toObject(),
+            images: property.images.map((image) => ({
+                data: image.data.toString('base64'), // Convert Buffer to Base64
+                type: image.type,
+            })),
+        }));
+
         res.status(200).json({
             message: 'Properties fetched successfully.',
-            properties
+            properties: formattedProperties,
         });
     } catch (err) {
         console.error(err);
         res.status(500).json({ message: 'An error occurred while fetching properties.', error: err.message });
+    }
+};
+
+module.exports.getMyProperties = async(req,res)=>{
+    const user = req.user;
+    // console.log(user);
+    try{
+        const properties = await propertyModel.find({userId:user.email})
+        // console.log(properties);
+        const formattedProperties = properties.map((property) => ({
+            ...property.toObject(),
+            images: property.images.map((image) => ({
+                data: image.data.toString('base64'), // Convert Buffer to Base64
+                type: image.type,
+            })),
+        }));
+
+        res.status(200).json({
+            message: 'Properties fetched successfully.',
+            properties: formattedProperties,
+        });
+    }catch(err){
+        console.error(err);
+        res.status(500).json({ message: 'An error occurred while fetching Your properties.', error: err.message });
     }
 };

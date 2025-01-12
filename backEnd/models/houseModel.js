@@ -22,11 +22,11 @@ const imageSchema = new mongoose.Schema({
 const houseSchema = new mongoose.Schema({
     userId: {
         type: String,
-        required: true
+        required: true,
     },
     propertyId:{
         type: Number,
-        required: true
+        required: true,
     },
     amount: {
         type: Number,
@@ -45,6 +45,6 @@ const houseSchema = new mongoose.Schema({
         type: Date, default: Date.now() 
     }
 });
-
+houseSchema.index({ userId: 1, propertyId: 1 }, { unique: true });
 // Export the model
 module.exports = mongoose.model('House', houseSchema);
