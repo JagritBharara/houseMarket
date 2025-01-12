@@ -39,7 +39,7 @@ const PropertyList = () => {
                         <h2 className="text-lg font-semibold mb-2">{property.category}</h2>
                         <p className="text-sm text-gray-600">Amount: ${property.amount}</p>
                         <p className="text-sm text-gray-600">
-                            Description: {property.description}
+                            Address: {property.description}
                         </p>
                         <p className="text-sm text-gray-600">
                             Date: {new Date(property.date).toLocaleDateString()}
