@@ -24,9 +24,6 @@ This is a property management API that allows users to register, log in, manage 
 - **FS** for file handling
 - **MongoDB** as the database
 
-## Installation
 
-1. Clone the repository:
 
-```bash
-git clone [https://github.com/yourusername/property-management-api.git](https://github.com/JagritBharara/houseMarket.git)
+
