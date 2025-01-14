@@ -10,9 +10,25 @@ module.exports.addProperty = async (req, res) => {
         if (!userId || !amount || !category || !propertyId) {
             return res.status(400).json({ message: 'Required fields are missing.' });
         }
-
+        
         const images = req.files.map((file) => {
+            /*  Each file contain req.file[file]
+            [
+                {
+                    "fieldname": "file",
+                    "originalname": "house.jpg",
+                    "encoding": "7bit",
+                    "mimetype": "image/jpeg",
+                    "destination": "uploads/",
+                    "filename": "some-random-filename",
+                    "path": "uploads/some-random-filename",
+                    "size": 102345
+                }
+                ]
+            
+            */
             const imageData = fs.readFileSync(file.path); // Read file as Buffer
+            // imageData contain buffer
             return {
                 data: imageData,
                 type: file.mimetype,
