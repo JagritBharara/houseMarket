@@ -25,5 +25,12 @@ This is a property management API that allows users to register, log in, manage 
 - **MongoDB** as the database
 
 
+## Images
+<img width="1440" alt="Image" src="https://github.com/user-attachments/assets/f0e44386-e4fe-4af3-b059-3df4f164211d" />
 
+<img width="1440" alt="Image" src="https://github.com/user-attachments/assets/ec5a3d0c-84ff-439b-a051-02370b5a9734" />
+
+<img width="1440" alt="Image" src="https://github.com/user-attachments/assets/98c57d2c-00c7-4850-bec8-7169958502eb" />
+
+<img width="1440" alt="Image" src="https://github.com/user-attachments/assets/f42a067e-d9f4-4950-809c-aa243f52ce5e" />
 
