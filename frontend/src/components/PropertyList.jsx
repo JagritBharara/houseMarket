@@ -1,30 +1,33 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/20/solid';
 
 const PropertyList = () => {
     const [properties, setProperties] = useState([]);
     const [loading, setLoading] = useState(true);
-    // const [error, setError] = useState(null);
+    const [currentPage, setCurrentPage] = useState(1); // Track current page
+    const [totalPages, setTotalPages] = useState(1); // Track total pages
 
     // Fetch properties from the backend
-    useEffect(() => {
-        const fetchProperties = async () => {
-            try {
-                const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/property/getAllProperties`);
-                setProperties(response.data.properties);
-                console.log(properties);
-                setLoading(false);
-            } catch (err) {
-                // setError(err.message);
-                setLoading(false);
-            }
-        };
+    const fetchProperties = async (page) => {
+        try {
+            setLoading(true); // Set loading to true before fetching data
+            const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/property/getAllProperties?page=${page}`);
+            setProperties(response.data.properties);
+            setTotalPages(response.data.totalPages);
+            setLoading(false); // Set loading to false after data is fetched
+        } catch (err) {
+            setLoading(false); // Handle errors and stop loading
+            console.error(err);
+        }
+    };
 
-        fetchProperties();
-    }, []);
+    // Fetch properties when component mounts or page changes
+    useEffect(() => {
+        fetchProperties(currentPage);
+    }, [currentPage]);
 
     if (loading) return <div>Loading properties...</div>;
-    // if (error) return <div>Error: {error}</div>;
 
     return (
         <div className="container mx-auto p-6">
@@ -35,7 +38,6 @@ const PropertyList = () => {
                         key={property._id}
                         className="border rounded-lg shadow p-4 bg-white"
                     >
-
                         <h2 className="text-lg font-semibold mb-2">{property.category}</h2>
                         <p className="text-sm text-gray-600">Amount: ${property.amount}</p>
                         <p className="text-sm text-gray-600">
@@ -57,9 +59,32 @@ const PropertyList = () => {
                     </div>
                 ))}
             </div>
+
+            {/* Pagination Controls */}
+            <div className="flex justify-between items-center mt-6">
+                <button
+                    onClick={() => setCurrentPage(currentPage - 1)}
+                    disabled={currentPage === 1}
+                    className="inline-flex items-center p-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50"
+                >
+                    <ChevronLeftIcon className="w-5 h-5" />
+                    Previous
+                </button>
+                <span className="text-sm text-gray-700">
+                    Page {currentPage} of {totalPages}
+                </span>
+                <button
+                    onClick={() => setCurrentPage(currentPage + 1)}
+                    disabled={currentPage === totalPages}
+                    className="inline-flex items-center p-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50"
+                >
+                    Next
+                    <ChevronRightIcon className="w-5 h-5" />
+                </button>
+            </div>
         </div>
     );
-    
 };
 
 export default PropertyList;
+

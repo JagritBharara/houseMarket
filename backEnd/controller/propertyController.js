@@ -124,7 +124,21 @@ module.exports.getdeleteProperty = async (req, res) => {
 // Show all properties
 module.exports.getAllProperties = async (req, res) => {
     try {
-        const properties = await propertyModel.find();
+        // Get the page and limit from the query parameters (default to 1 page and 10 items per page)
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 9;
+
+        // Calculate the number of documents to skip (for pagination)
+        const skip = (page - 1) * limit;
+
+        // Fetch the properties with pagination
+        const properties = await propertyModel
+            .find()  // Fetch the properties
+            .skip(skip)  // Skip the documents based on the page number
+            .limit(limit);  // Limit the number of documents per page
+
+        // Calculate the total number of properties for pagination (to determine the total number of pages)
+        const totalProperties = await propertyModel.countDocuments();
 
         // Convert image buffers to Base64 strings
         const formattedProperties = properties.map((property) => ({
@@ -138,6 +152,9 @@ module.exports.getAllProperties = async (req, res) => {
         res.status(200).json({
             message: 'Properties fetched successfully.',
             properties: formattedProperties,
+            totalProperties,  // Total number of properties in the database
+            totalPages: Math.ceil(totalProperties / limit),  // Total number of pages
+            currentPage: page,  // Current page number
         });
     } catch (err) {
         console.error(err);
